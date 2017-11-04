@@ -33,6 +33,8 @@ def parse_args():
                         action='store_true',
                         help="Simulate neutral mutations.  If False, ARG is tracked instead and neutral mutations dropped down on the sample afterwards.")
     parser.add_argument('--outfile1', type=str, help="Main output file")
+    parser.add_argument("--treefile","-t", type=str, dest="treefile",
+                        help="name of output file for trees (default: not output)",default=None)
     return parser
 
 
@@ -98,6 +100,13 @@ if __name__ == "__main__":
                                                  replace=False).tolist(),
                                 nodes=simplifier.nodes,
                                 edges=simplifier.edges)
+        if args.treefile is not None:
+            sites = msprime.SiteTable()
+            mutations = msprime.MutationTable()
+            ts = msprime.load_tables(nodes=simplifier.nodes,
+                                     edges=simplifier.edges, sites=sites,
+                                     mutations=mutations)
+            ts.dump(args.treefile)
         msp_rng = msprime.RandomGenerator(args.seed)
         sites = msprime.SiteTable()
         mutations = msprime.MutationTable()
